@@ -1,43 +1,81 @@
 # ClientFlow CRM
 
-ClientFlow CRM is a modern, production-ready customer relationship management platform designed for freelancers, agencies, sales teams, consultants, service businesses, and SMEs.
+Enterprise Customer Relationship Management (CRM) platform designed for freelancers, agencies, consultants, sales teams, and growing businesses to efficiently manage leads, customers, deals, and daily operations.
 
-## Installation
+## Live Demo
+
+🔗 **Demo:** *(Paste your Vercel URL here)*
+
+## Demo Access
+
+This project is currently running in **Portfolio Demo Mode**.
+
+* **Authentication:** No registration required
+* **Access:** Enter the demo and explore all available features
+* **Purpose:** Demonstration of UI, workflows, and business logic
+
+> **Note:** This is a portfolio demonstration. Production authentication, backend integrations, and persistent data storage can be implemented for client deployments.
+
+---
+
+## Features
+
+* CRM Dashboard
+* Lead Management
+* Customer Management
+* Deal Pipeline (Kanban)
+* Task Management
+* Activity Timeline
+* KPI Dashboard
+* Portfolio Demo Mode
+* Responsive Design
+* Progressive Web App (PWA)
+
+---
+
+## Tech Stack
+
+* React
+* TypeScript
+* Vite
+* Firebase
+* Tailwind CSS
+
+---
+
+## Screenshots
+
+> Screenshots will be added here.
+
+---
+
+## Run Locally
 
 ```bash
+git clone https://github.com/ebroboooo/ImmigrationFlow-Pro.git
+
+cd ImmigrationFlow-Pro
+
 npm install
-```
 
-## Running Locally
-
-```bash
 npm run dev
 ```
 
-## Building for Production
+---
 
-```bash
-npm run build
-```
+## Roadmap
 
-## Deployment
+* Email Automation
+* Calendar Integration
+* AI Lead Scoring
+* Document Management
+* Role-Based Permissions
+* Multi-Organization Support
 
-### Vercel
-1. Push this repository to GitHub.
-2. Import the project in Vercel.
-3. Vercel will automatically detect the Vite framework and configure the build settings.
-4. Deploy!
+---
 
-### Firebase Hosting
-1. Install Firebase CLI: `npm install -g firebase-tools`
-2. Login: `firebase login`
-3. Initialize: `firebase init hosting` (Select the `dist` folder as the public directory)
-4. Deploy: `firebase deploy --only hosting`
+## Author
 
-## Features
-- **Dashboard**: KPI cards, widgets, charts.
-- **Lead Management**: List view, timeline, filters.
-- **Deal Management**: Kanban board with drag-and-drop.
-- **Customer Management**: Profiles, timelines.
-- **Task Management**: Checklists, due dates.
-- **Portfolio Mode**: Instant demo data generation.
+**Ebram Sherif**
+
+GitHub: https://github.com/ebroboooo
