@@ -53,17 +53,25 @@ This project runs in **Portfolio Demo Mode**:
 
 ## 📸 Screenshots
 
-### 📊 Dashboard Overview
-![Dashboard](screenshots/dashboard.PNG)
+📊 Dashboard
 
-### 📁 Applications Management
-![Applications](screenshots/applications.PNG)
+https://raw.githubusercontent.com/ebroboooo/ImmigrationFlow-Pro/main/screenshots/dashboard.PNG
 
-### 📄 Documents Management
-![Documents](screenshots/doscuments.PNG)
+👥 Customers
 
-### 📌 Status Tracking
-![Status](screenshots/status.PNG)
+https://raw.githubusercontent.com/ebroboooo/ImmigrationFlow-Pro/main/screenshots/customers.PNG
+
+📄 Documents 
+
+https://raw.githubusercontent.com/ebroboooo/ImmigrationFlow-Pro/main/screenshots/doscuments.PNG
+
+🧲 Leads
+
+https://raw.githubusercontent.com/ebroboooo/ImmigrationFlow-Pro/main/screenshots/leads.PNG
+
+✅ Tasks
+
+https://raw.githubusercontent.com/ebroboooo/ImmigrationFlow-Pro/main/screenshots/tasks.PNG
 
 ---
 
