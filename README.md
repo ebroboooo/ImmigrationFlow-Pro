@@ -62,9 +62,6 @@ This project is running in **Portfolio Demo Mode**.
 ### 📊 Dashboard Overview
 ![Dashboard](screenshots/dashboard.PNG)
 
-### 🧲 Leads Management
-![Leads](screenshots/leads.PNG)
-
 ### 👥 Customers Database
 ![Customers](screenshots/customers.PNG)
 
@@ -72,7 +69,7 @@ This project is running in **Portfolio Demo Mode**.
 ![Deals Pipeline](screenshots/deals.PNG)
 
 ### 📄 Documents Management
-![Documents](screenshots/documents.PNG)
+![Documents](screenshots/doscuments.PNG)
 
 ### ✅ Task Management
 ![Tasks](screenshots/tasks.PNG)
