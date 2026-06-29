@@ -65,9 +65,6 @@ This project is running in **Portfolio Demo Mode**.
 ### 👥 Customers Database
 ![Customers](screenshots/customers.PNG)
 
-### 💰 Deals Pipeline
-![Deals Pipeline](screenshots/deals.PNG)
-
 ### 📄 Documents Management
 ![Documents](screenshots/doscuments.PNG)
 
