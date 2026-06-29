@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="screenshots/banner.png" alt="ClientFlow CRM Banner" width="100%">
+  <img src="screenshots/banner.png" alt="ImmigrationFlow Pro Banner" width="100%">
 </p>
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://immigration-flow-pro.vercel.app)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge\&logo=typescript)](https://www.typescriptlang.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge\&logo=firebase)](https://firebase.google.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#)
 
-# ClientFlow CRM
+# ImmigrationFlow Pro
 
-Enterprise Customer Relationship Management (CRM) platform built for freelancers, agencies, consultants, sales teams, and service businesses to manage leads, customers, deals, and business operations from a modern web dashboard.
+AI-assisted Immigration Case Management System designed to track applications, manage client documents, and monitor case progress in a structured workflow dashboard.
 
 ---
 
@@ -22,38 +22,32 @@ Enterprise Customer Relationship Management (CRM) platform built for freelancers
 
 ## 🔐 Demo Access
 
-This project is running in **Portfolio Demo Mode**.
+This project runs in **Portfolio Demo Mode**:
 
-* No registration required
-* Explore all available features
-* Built to demonstrate UI, workflows, and business logic
-
-> **Note:** Production authentication, backend integrations, and persistent database support can be implemented for client deployments.
+- No authentication required  
+- Full UI exploration enabled  
+- Built to demonstrate workflows and system design  
 
 ---
 
 ## ✨ Features
 
-* Interactive CRM Dashboard
-* Lead Management
-* Customer Management
-* Deal Pipeline (Kanban)
-* Task Management
-* Activity Timeline
-* KPI & Analytics Widgets
-* Responsive Design
-* Progressive Web App (PWA)
-* Portfolio Demo Mode
+- Immigration case tracking dashboard  
+- Client application management  
+- Document workflow system  
+- Status tracking pipeline  
+- Admin overview panel  
+- Responsive UI design  
 
 ---
 
 ## 🛠 Tech Stack
 
-* React
-* TypeScript
-* Vite
-* Firebase
-* Tailwind CSS
+- React  
+- TypeScript  
+- Vite  
+- Firebase  
+- Tailwind CSS  
 
 ---
 
@@ -62,14 +56,32 @@ This project is running in **Portfolio Demo Mode**.
 ### 📊 Dashboard Overview
 ![Dashboard](screenshots/dashboard.PNG)
 
-### 👥 Customers Database
-![Customers](screenshots/customers.PNG)
+### 📁 Applications Management
+![Applications](screenshots/applications.PNG)
 
 ### 📄 Documents Management
 ![Documents](screenshots/doscuments.PNG)
 
-### ✅ Task Management
-![Tasks](screenshots/tasks.PNG)
+### 📌 Status Tracking
+![Status](screenshots/status.PNG)
+
+---
+
+## 🗺 Roadmap
+
+- AI-assisted case evaluation  
+- Email notification system  
+- Calendar integration  
+- Role-based access control  
+- Multi-client support  
+- Document automation pipeline  
+
+---
+
+## 👨‍💻 Author
+
+**Ebram Sherif**  
+GitHub: https://github.com/ebroboooo  
 
 ---
 
@@ -83,24 +95,3 @@ cd ImmigrationFlow-Pro
 npm install
 
 npm run dev
-```
-
----
-
-## 🗺 Roadmap
-
-* AI Lead Scoring
-* Email Automation
-* Calendar Integration
-* Document Management
-* Role-Based Permissions
-* Multi-Organization Support
-* REST API Integrations
-
----
-
-## 👨‍💻 Author
-
-**Ebram Sherif**
-
-GitHub: https://github.com/ebroboooo
