@@ -30,8 +30,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } else {
             localStorage.removeItem(STORAGE_KEYS.session);
           }
-        } catch (e) {
-          console.error('Session check failed', e);
+        } catch {
+          // session restore failed — user will be redirected to login
+          localStorage.removeItem(STORAGE_KEYS.session);
         }
       }
       setLoading(false);

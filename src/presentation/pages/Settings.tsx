@@ -3,45 +3,58 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { useRepositories } from '../contexts/RepositoryContext';
+import { useToast } from '../contexts/ToastContext';
 import { seedDemoData, seedFreshData } from '../../infrastructure/seeders/DemoSeeder';
 import { exportTenantData, downloadJson } from '../../lib/exportData';
-import { Save, RefreshCw, Download, Upload, Trash2, Building2, Globe, Monitor, Users, Database } from 'lucide-react';
+import { importTenantData, parseImportFile } from '../../lib/importData';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { Save, RefreshCw, Download, Upload, Trash2, Building2, Globe, Monitor, Users, Database, Bot } from 'lucide-react';
+import { AiSettingsPanel } from '../components/settings/AiSettingsPanel';
 import { cn } from '../../lib/utils';
+import { design } from '../../lib/design';
+
+type ConfirmAction = 'reset' | 'clear' | null;
 
 export const Settings = () => {
   const { user, tenantId } = useAuth();
   const { theme, setTheme } = useTheme();
   const { settings, updateSettings, saveSettings } = useSettings();
   const repos = useRepositories();
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState('business');
   const [loading, setLoading] = useState(false);
-  const [saveMessage, setSaveMessage] = useState('');
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
   const handleSave = async () => {
     setLoading(true);
     saveSettings();
     await new Promise(r => setTimeout(r, 400));
     setLoading(false);
-    setSaveMessage('Settings saved successfully.');
-    setTimeout(() => setSaveMessage(''), 3000);
+    showToast('Your settings were saved successfully.');
   };
 
   const handleResetData = async () => {
-    if (window.confirm('Reset all data and load demo dataset for Smith & Associates Immigration Law?')) {
-      setLoading(true);
+    setLoading(true);
+    try {
       await seedDemoData();
-      setLoading(false);
+      showToast('Sample firm data loaded. Redirecting…', 'info');
       window.location.href = '/';
+    } catch {
+      showToast('Could not load sample data. Please try again.', 'error');
+      setLoading(false);
     }
   };
 
   const handleClearData = async () => {
-    if (window.confirm('WARNING: This will completely wipe all data. Are you sure?')) {
-      setLoading(true);
+    setLoading(true);
+    try {
       await seedFreshData();
-      setLoading(false);
+      showToast('All data cleared. Starting fresh…', 'info');
       window.location.href = '/welcome';
+    } catch {
+      showToast('Could not clear data. Please try again.', 'error');
+      setLoading(false);
     }
   };
 
@@ -50,6 +63,9 @@ export const Settings = () => {
     try {
       const data = await exportTenantData(repos, tenantId);
       downloadJson(data, `immigrationflow-export-${new Date().toISOString().slice(0, 10)}.json`);
+      showToast('Your data backup was downloaded.');
+    } catch {
+      showToast('Export failed. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -58,11 +74,22 @@ export const Settings = () => {
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = '.json';
+    input.accept = '.json,application/json';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      alert('Import requires Firebase or server-side processing. Export is available for backup.');
+      setLoading(true);
+      try {
+        const text = await file.text();
+        const payload = parseImportFile(text);
+        const count = await importTenantData(repos, tenantId, payload);
+        showToast(`Restored ${count} records from your backup file.`);
+        window.location.reload();
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Import failed. Please check the file and try again.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
     input.click();
   };
@@ -73,6 +100,7 @@ export const Settings = () => {
     { id: 'system', label: 'System', icon: Monitor },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'data', label: 'Data Management', icon: Database },
+    { id: 'ai', label: 'AI', icon: Bot },
   ];
 
   return (
@@ -80,13 +108,13 @@ export const Settings = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Settings</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your firm profile, preferences, and data.</p>
-          {saveMessage && <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">{saveMessage}</p>}
+          <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Manage your firm profile, preferences, and data.</p>
         </div>
         <button
+          type="button"
           onClick={handleSave}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg font-medium transition-colors"
+          className={cn(design.btn.primary, 'w-full sm:w-auto')}
         >
           {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
           Save Changes
@@ -98,12 +126,13 @@ export const Settings = () => {
           {tabs.map(tab => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                'w-full flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-colors min-h-12',
                 activeTab === tab.id
-                  ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
               )}
             >
               <tab.icon className="w-5 h-5" />
@@ -120,18 +149,18 @@ export const Settings = () => {
                 {([
                   ['Company Name', 'companyName', 'text'],
                   ['Email Address', 'email', 'email'],
-                  ['Phone Number', 'phone', 'text'],
+                  ['Phone Number', 'phone', 'tel'],
                 ] as const).map(([label, key, type]) => (
                   <div key={key} className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                    <label className="text-base font-medium text-gray-700 dark:text-gray-300">{label}</label>
                     <input type={type} value={settings[key]} onChange={e => updateSettings({ [key]: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white" />
+                      className={design.input} />
                   </div>
                 ))}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Physical Address</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Physical Address</label>
                   <textarea value={settings.address} onChange={e => updateSettings({ address: e.target.value })} rows={3}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white" />
+                    className={design.input} />
                 </div>
               </div>
             </div>
@@ -142,9 +171,9 @@ export const Settings = () => {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-800 pb-4">Localization Preferences</h2>
               <div className="grid gap-6 max-w-lg">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Language</label>
                   <select value={settings.language} onChange={e => updateSettings({ language: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white">
+                    className={design.input}>
                     <option value="en">English</option>
                     <option value="es">Spanish</option>
                     <option value="fr">French</option>
@@ -152,18 +181,18 @@ export const Settings = () => {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Currency</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Currency</label>
                   <select value={settings.currency} onChange={e => updateSettings({ currency: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white">
+                    className={design.input}>
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
                     <option value="GBP">GBP (£)</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Timezone</label>
                   <select value={settings.timezone} onChange={e => updateSettings({ timezone: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white">
+                    className={design.input}>
                     <option value="America/New_York">Eastern (US)</option>
                     <option value="America/Chicago">Central (US)</option>
                     <option value="America/Los_Angeles">Pacific (US)</option>
@@ -173,7 +202,7 @@ export const Settings = () => {
                 <div className="flex items-center gap-3">
                   <input type="checkbox" id="rtl" checked={settings.rtl} onChange={e => updateSettings({ rtl: e.target.checked })}
                     className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                  <label htmlFor="rtl" className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Right-to-Left (RTL) Layout</label>
+                  <label htmlFor="rtl" className="text-base font-medium text-gray-700 dark:text-gray-300">Enable Right-to-Left (RTL) Layout</label>
                 </div>
               </div>
             </div>
@@ -184,20 +213,20 @@ export const Settings = () => {
               <h2 className="text-lg font-bold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-800 pb-4">System Settings</h2>
               <div className="grid gap-6 max-w-lg">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">UI Theme</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Display Theme</label>
                   <div className="flex gap-4">
-                    <button onClick={() => setTheme('light')} className={cn("px-4 py-2 rounded-lg border", theme === 'light' ? "border-indigo-500 bg-indigo-50 text-indigo-700" : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300")}>Light Mode</button>
-                    <button onClick={() => setTheme('dark')} className={cn("px-4 py-2 rounded-lg border", theme === 'dark' ? "border-indigo-500 bg-indigo-500/10 text-indigo-400" : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300")}>Dark Mode</button>
+                    <button type="button" onClick={() => setTheme('light')} className={cn('min-h-12 px-5 py-2 rounded-lg border text-base', theme === 'light' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300')}>Light Mode</button>
+                    <button type="button" onClick={() => setTheme('dark')} className={cn('min-h-12 px-5 py-2 rounded-lg border text-base', theme === 'dark' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300')}>Dark Mode</button>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Data Repository Engine</label>
+                  <label className="text-base font-medium text-gray-700 dark:text-gray-300">Data Storage</label>
                   <select disabled value={settings.repositoryEngine}
-                    className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-500 dark:text-gray-400 cursor-not-allowed">
-                    <option value="mock">Local Mock Storage (Active)</option>
-                    <option value="firebase">Firebase (Configuration Required)</option>
+                    className="w-full min-h-12 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-base text-gray-500 dark:text-gray-400 cursor-not-allowed">
+                    <option value="mock">Local Storage (Active)</option>
+                    <option value="firebase">Cloud Storage (Requires Setup)</option>
                   </select>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Repository abstraction is ready. Switch to Firebase when cloud credentials are configured.</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Your firm data is stored securely on this device. Cloud sync is available when configured.</p>
                 </div>
               </div>
             </div>
@@ -209,11 +238,11 @@ export const Settings = () => {
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
+                  <p className="text-base text-gray-500">{user?.email}</p>
                 </div>
                 <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-semibold uppercase tracking-wider">{user?.role}</span>
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Role-based permissions are enforced across all modules. Admin users have full access.</p>
+              <p className="text-base text-gray-500 dark:text-gray-400">Staff roles control access across all modules. Administrators have full access to firm data.</p>
             </div>
           )}
 
@@ -227,9 +256,9 @@ export const Settings = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">Export Data</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Download all firm data as a JSON backup file.</p>
+                    <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Download all firm data as a JSON backup file.</p>
                   </div>
-                  <button onClick={handleExport} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Export JSON</button>
+                  <button type="button" onClick={handleExport} disabled={loading} className="text-base font-medium text-indigo-600 dark:text-indigo-400 hover:underline min-h-12">Export JSON</button>
                 </div>
 
                 <div className="p-5 border border-gray-200 dark:border-gray-700 rounded-xl space-y-4">
@@ -238,9 +267,9 @@ export const Settings = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">Import Data</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Restore from a JSON backup (requires Firebase for full restore).</p>
+                    <p className="text-base text-gray-500 dark:text-gray-400 mt-1">Restore clients, cases, documents, and billing from a JSON backup.</p>
                   </div>
-                  <button onClick={handleImport} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Upload JSON</button>
+                  <button type="button" onClick={handleImport} disabled={loading} className="text-base font-medium text-indigo-600 dark:text-indigo-400 hover:underline min-h-12">Upload JSON</button>
                 </div>
 
                 <div className="p-5 border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-500/5 rounded-xl space-y-4">
@@ -248,10 +277,10 @@ export const Settings = () => {
                     <RefreshCw className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-amber-900 dark:text-amber-500">Regenerate Demo Data</h3>
-                    <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">Load Smith & Associates demo: 100 clients, 95 cases, 400 documents, 60 appointments.</p>
+                    <h3 className="font-semibold text-amber-900 dark:text-amber-500">Load Sample Data</h3>
+                    <p className="text-base text-amber-700 dark:text-amber-400 mt-1">Load a complete sample firm with clients, cases, documents, and appointments for demonstration.</p>
                   </div>
-                  <button onClick={handleResetData} className="text-sm font-medium text-amber-700 dark:text-amber-500 hover:underline">Run Demo Seeder</button>
+                  <button type="button" onClick={() => setConfirmAction('reset')} className="text-base font-medium text-amber-700 dark:text-amber-500 hover:underline min-h-12">Load Sample Firm</button>
                 </div>
 
                 <div className="p-5 border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-500/5 rounded-xl space-y-4">
@@ -259,16 +288,38 @@ export const Settings = () => {
                     <Trash2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-rose-900 dark:text-rose-500">Fresh Start</h3>
-                    <p className="text-sm text-rose-700 dark:text-rose-400 mt-1">Start completely fresh. This action cannot be undone.</p>
+                    <h3 className="font-semibold text-rose-900 dark:text-rose-500">Start Fresh</h3>
+                    <p className="text-base text-rose-700 dark:text-rose-400 mt-1">Remove all firm data and begin with a clean workspace. This cannot be undone.</p>
                   </div>
-                  <button onClick={handleClearData} className="text-sm font-medium text-rose-700 dark:text-rose-500 hover:underline">Wipe All Data</button>
+                  <button type="button" onClick={() => setConfirmAction('clear')} className="text-base font-medium text-rose-700 dark:text-rose-500 hover:underline min-h-12">Clear All Data</button>
                 </div>
               </div>
             </div>
           )}
+
+          {activeTab === 'ai' && (
+            <AiSettingsPanel onSaved={() => showToast('AI settings saved.')} />
+          )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmAction === 'reset'}
+        title="Load sample firm data?"
+        message="This will replace your current data with a complete sample immigration firm. You can export your data first if you need a backup."
+        confirmLabel="Load Sample Data"
+        onConfirm={() => { setConfirmAction(null); void handleResetData(); }}
+        onCancel={() => setConfirmAction(null)}
+      />
+      <ConfirmDialog
+        open={confirmAction === 'clear'}
+        title="Clear all firm data?"
+        message="This permanently removes all clients, cases, documents, and billing records. This action cannot be undone."
+        confirmLabel="Clear Everything"
+        destructive
+        onConfirm={() => { setConfirmAction(null); void handleClearData(); }}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 };

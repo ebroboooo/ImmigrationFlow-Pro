@@ -11,8 +11,7 @@ export interface Case {
   value: number;
   probability: number;
   stage: CaseStage;
-  
-  // Immigration Specific Fields
+
   uscisReceiptNumber?: string;
   filingDate?: Date;
   priorityDate?: Date;

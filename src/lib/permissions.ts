@@ -21,14 +21,19 @@ export type Permission =
   | 'reports:view'
   | 'settings:view'
   | 'settings:edit'
-  | 'users:manage';
+  | 'users:manage'
+  | 'ai-intake:view'
+  | 'ai-intake:edit'
+  | 'migration:view'
+  | 'migration:edit';
 
 const ALL_PERMISSIONS: Permission[] = [
   'dashboard:view', 'clients:view', 'clients:edit', 'leads:view', 'leads:edit',
   'cases:view', 'cases:edit', 'tasks:view', 'tasks:edit', 'documents:view',
   'documents:edit', 'deadlines:view', 'deadlines:edit', 'calendar:view',
   'calendar:edit', 'billing:view', 'billing:edit', 'reports:view',
-  'settings:view', 'settings:edit', 'users:manage',
+  'settings:view', 'settings:edit', 'users:manage', 'ai-intake:view', 'ai-intake:edit',
+  'migration:view', 'migration:edit',
 ];
 
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
@@ -38,12 +43,12 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'dashboard:view', 'clients:view', 'clients:edit', 'leads:view', 'cases:view',
     'cases:edit', 'tasks:view', 'tasks:edit', 'documents:view', 'documents:edit',
     'deadlines:view', 'deadlines:edit', 'calendar:view', 'calendar:edit',
-    'billing:view', 'reports:view', 'settings:view',
+    'billing:view', 'reports:view', 'settings:view', 'ai-intake:view', 'ai-intake:edit',
   ],
   paralegal: [
     'dashboard:view', 'clients:view', 'cases:view', 'tasks:view', 'tasks:edit',
     'documents:view', 'documents:edit', 'deadlines:view', 'deadlines:edit',
-    'calendar:view', 'calendar:edit', 'settings:view',
+    'calendar:view', 'calendar:edit', 'settings:view', 'ai-intake:view', 'ai-intake:edit',
   ],
   receptionist: [
     'dashboard:view', 'clients:view', 'clients:edit', 'leads:view', 'leads:edit',
@@ -75,8 +80,10 @@ export function canAccessRoute(role: UserRole | undefined, path: string): boolea
     '/reports': 'reports:view',
     '/settings': 'settings:view',
     '/notifications': 'dashboard:view',
+    '/ai-intake': 'ai-intake:view',
+    '/migration': 'migration:view',
   };
-  const permission = routePermissions[path];
+  const permission = routePermissions[path] ?? (path.startsWith('/ai-intake') ? 'ai-intake:view' as Permission : path.startsWith('/migration') ? 'migration:view' as Permission : undefined);
   if (!permission) return true;
   return hasPermission(role, permission);
 }

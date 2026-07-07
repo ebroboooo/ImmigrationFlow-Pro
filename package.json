@@ -4,10 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "set BROWSER=none&& vite",
+    "dev:client": "set BROWSER=none&& vite",
     "build": "tsc -b && vite build",
+    "test": "tsx --test src/domain/uscis/receiptValidator.test.ts src/infrastructure/calendar/googleEventMapper.test.ts src/infrastructure/ai/classification/heuristicDocumentClassifier.test.ts src/infrastructure/ai/providers/gemini/geminiResponseParser.test.ts src/infrastructure/ai/prompts/promptLibrary.test.ts src/infrastructure/ai/copilot/caseCopilotHeuristics.test.ts src/infrastructure/ai/providers/gemini/caseCopilotResponseParser.test.ts src/infrastructure/ai/ocr/ocrTextCleanup.test.ts src/infrastructure/ai/intelligence/documentIntelligenceParser.test.ts src/infrastructure/ai/validation/fieldValidationService.test.ts src/infrastructure/import/mapping/columnMappingEngine.test.ts src/infrastructure/import/duplicate/migrationDuplicateEngine.test.ts src/infrastructure/import/validation/migrationValidationService.test.ts src/infrastructure/import/documents/documentLinkingEngine.test.ts src/infrastructure/import/transaction/migrationTransactionManager.test.ts src/infrastructure/import/mapping/migrationEntityBuilder.test.ts src/application/workspace/workspaceServices.test.ts",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "set BROWSER=none&& vite preview",
+    "icons:generate": "node scripts/generate-pwa-icons.mjs",
+    "release:pack": "node scripts/create-release.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -16,13 +20,17 @@
     "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^1.21.0",
+    "pdfjs-dist": "^6.1.200",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.0",
     "recharts": "^3.9.0",
     "tailwind-merge": "^3.6.0",
-    "uuid": "^14.0.1"
+    "tesseract.js": "^7.0.0",
+    "uuid": "^14.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.1",
@@ -33,7 +41,9 @@
     "autoprefixer": "^10.5.1",
     "oxlint": "^1.69.0",
     "postcss": "^8.5.15",
+    "sharp": "^0.34.2",
     "tailwindcss": "^4.3.1",
+    "tsx": "^4.19.3",
     "typescript": "~6.0.2",
     "vite": "^8.1.0",
     "vite-plugin-pwa": "^1.3.0"

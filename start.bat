@@ -67,9 +67,6 @@ echo   Press Ctrl+C to stop the server.
 echo  ============================================================
 echo.
 
-:: Open browser after 2 seconds
-start "" cmd /c "timeout /t 2 >nul && start http://localhost:5174"
-
 :: Serve the production build (has full service worker / PWA support)
 call npm run preview -- --port 5174 --host
 

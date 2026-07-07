@@ -4,7 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Download, TrendingUp, Users, FileText, CheckCircle, XCircle, Clock, DollarSign } from 'lucide-react';
 import { formatCurrency, cn } from '../../lib/utils';
+import { PageSkeleton } from '../components/ui/Skeleton';
+import { PageHeader } from '../components/ui/PageHeader';
 import { downloadCsv } from '../../lib/exportData';
+import { design } from '../../lib/design';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
 
 type DateFilter = 'Week' | 'Month' | 'Year';
@@ -108,8 +111,8 @@ export const Reports = () => {
 
         void allUsers;
         void allTasks;
-      } catch (error) {
-        console.error(error);
+      } catch {
+        // metrics remain at defaults
       } finally {
         setLoading(false);
       }
@@ -151,30 +154,30 @@ export const Reports = () => {
     { title: 'Doc Completion', value: `${metrics.leadConversion}%`, icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-500/10' },
   ];
 
-  if (loading) return <div className="p-8 text-gray-500">Loading reports...</div>;
+  if (loading) return <PageSkeleton />;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Reports & Analytics</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Immigration firm performance metrics and case analytics.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            {(['Week', 'Month', 'Year'] as DateFilter[]).map(f => (
-              <button key={f} onClick={() => setDateFilter(f)}
-                className={cn("px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-                  dateFilter === f ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white")}>
-                {f}
-              </button>
-            ))}
+      <PageHeader
+        title="Reports & Analytics"
+        description="Immigration firm performance metrics and case analytics."
+        action={
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              {(['Week', 'Month', 'Year'] as DateFilter[]).map(f => (
+                <button key={f} type="button" onClick={() => setDateFilter(f)}
+                  className={cn('min-h-10 px-4 py-1.5 rounded-md text-base font-medium transition-colors',
+                    dateFilter === f ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white')}>
+                  {f}
+                </button>
+              ))}
+            </div>
+            <button type="button" onClick={handleExportCsv} className={cn(design.btn.primary, 'w-full sm:w-auto')}>
+              <Download className="w-5 h-5" /> Export CSV
+            </button>
           </div>
-          <button onClick={handleExportCsv} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
-            <Download className="w-4 h-4" /> Export CSV
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpiCards.map((kpi, index) => (

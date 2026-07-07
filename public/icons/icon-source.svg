@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ImmigrationFlow Pro">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <path d="M256 118c-52 0-94 42-94 94v22h36v-22c0-32 26-58 58-58s58 26 58 58v22h36v-22c0-52-42-94-94-94z" opacity="0.95"/>
+    <rect x="148" y="234" width="216" height="160" rx="28"/>
+    <circle cx="208" cy="314" r="22" fill="#4f46e5"/>
+    <circle cx="304" cy="314" r="22" fill="#4f46e5"/>
+    <path d="M196 362h120" stroke="#4f46e5" stroke-width="16" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -15,17 +15,50 @@ class MockRepository<T extends { id: string }> {
 
   protected loadFromStorage() {
     const data = localStorage.getItem(this.storageKey);
-    if (data) {
-      this.items = JSON.parse(data, (_key, value) => {
-        if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-          return new Date(value);
-        }
-        return value;
-      });
+    if (!data) return;
+
+    const parsed = JSON.parse(data, (_key, value) => {
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+        return new Date(value);
+      }
+      return value;
+    });
+
+    this.items = this.normalizeStoredItems(parsed);
+    if (this.items !== parsed) {
+      this.saveToStorage();
     }
   }
 
+  /** Ensures repository collections loaded from localStorage are always arrays. */
+  private normalizeStoredItems(parsed: unknown): T[] {
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+
+    if (parsed && typeof parsed === 'object') {
+      const record = parsed as Record<string, unknown>;
+
+      // Legacy: single entity object stored instead of an array
+      if ('id' in record && typeof record.id === 'string') {
+        return [parsed as T];
+      }
+
+      // Legacy: array-like object with numeric keys
+      const values = Object.values(record);
+      if (values.length > 0 && values.every((v) => v && typeof v === 'object' && 'id' in (v as object))) {
+        return values as T[];
+      }
+    }
+
+    localStorage.removeItem(this.storageKey);
+    return [];
+  }
+
   protected saveToStorage() {
+    if (!Array.isArray(this.items)) {
+      this.items = [];
+    }
     localStorage.setItem(this.storageKey, JSON.stringify(this.items));
   }
 
@@ -42,6 +75,17 @@ class MockRepository<T extends { id: string }> {
     this.items.push(newItem);
     this.saveToStorage();
     return newItem;
+  }
+
+  async upsert(item: T): Promise<T> {
+    const index = this.items.findIndex(i => i.id === item.id);
+    if (index === -1) {
+      this.items.push(item);
+    } else {
+      this.items[index] = item;
+    }
+    this.saveToStorage();
+    return item;
   }
 
   async update(id: string, item: Partial<T>): Promise<T> {
@@ -63,8 +107,12 @@ class MockRepository<T extends { id: string }> {
   }
 
   async clearAndSeed(items: T[]): Promise<void> {
-    this.items = items;
+    this.items = Array.isArray(items) ? items : [];
     this.saveToStorage();
+  }
+
+  reloadFromStorage(): void {
+    this.loadFromStorage();
   }
 }
 
@@ -192,3 +240,11 @@ export const mockRepositories: IUnitOfWork = {
   deadlines: new DeadlineMockRepository('clientflow_deadlines'),
   appointments: new AppointmentMockRepository('clientflow_appointments'),
 };
+
+export function reloadAllMockRepositories(): void {
+  for (const repo of Object.values(mockRepositories)) {
+    if ('reloadFromStorage' in repo && typeof (repo as { reloadFromStorage?: () => void }).reloadFromStorage === 'function') {
+      (repo as { reloadFromStorage: () => void }).reloadFromStorage();
+    }
+  }
+}

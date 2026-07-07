@@ -9,4 +9,7 @@ export const STORAGE_KEYS = {
   setupComplete: 'clientflow_setup_complete',
   settings: 'immigrationflow_settings',
   theme: 'clientflow-ui-theme',
+  uscisRecentReceipt: 'immflow_uscis_recent_receipt',
+  aiSettings: 'immflow_ai_settings',
+  sidebarCollapsed: 'immflow_sidebar_collapsed',
 } as const;

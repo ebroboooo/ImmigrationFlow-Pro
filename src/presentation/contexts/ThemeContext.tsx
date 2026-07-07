@@ -23,7 +23,7 @@ const ThemeContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "dark", // Using dark by default as requested
+  defaultTheme = "light",
   storageKey = "clientflow-ui-theme",
   ...props
 }: ThemeProviderProps) {

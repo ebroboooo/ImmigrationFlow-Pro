@@ -24,10 +24,14 @@ function randomDate(startDaysAgo: number, endDaysAhead: number): Date {
   return days < 0 ? subDays(now, Math.abs(days)) : addDays(now, days);
 }
 
+function randomPrefix(): string {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return Array.from({ length: 3 }, () => letters[Math.floor(Math.random() * letters.length)]).join('');
+}
+
 function generateReceiptNumber() {
-  const prefix = randomElement(['WAC', 'LIN', 'SRC', 'EAC', 'MSC', 'IOE']);
   const num = Math.floor(Math.random() * 9000000000) + 1000000000;
-  return `${prefix}${num}`;
+  return `${randomPrefix()}${num}`;
 }
 
 async function seedRepo(repo: { clearAndSeed: (items: unknown[]) => Promise<void> }, items: unknown[]) {
@@ -337,8 +341,6 @@ export async function seedDemoData() {
     });
   }
   await seedRepo(mockRepositories.activities as unknown as { clearAndSeed: (items: unknown[]) => Promise<void> }, activities);
-
-  console.log('ImmigrationFlow Pro demo data seeding complete.');
 }
 
 type SeedableRepo = { clearAndSeed: (items: unknown[]) => Promise<void> };

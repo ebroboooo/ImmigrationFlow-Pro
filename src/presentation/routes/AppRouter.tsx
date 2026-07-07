@@ -20,6 +20,8 @@ const Settings = lazy(() => import('../pages/Settings').then(m => ({ default: m.
 const Reports = lazy(() => import('../pages/Reports').then(m => ({ default: m.Reports })));
 const Notifications = lazy(() => import('../pages/Notifications').then(m => ({ default: m.Notifications })));
 const Login = lazy(() => import('../pages/Login').then(m => ({ default: m.Login })));
+const AiIntake = lazy(() => import('../pages/AiIntake').then(m => ({ default: m.AiIntake })));
+const MigrationWizardPage = lazy(() => import('../pages/MigrationWizardPage').then(m => ({ default: m.MigrationWizardPage })));
 
 const PageLoader = () => (
   <div className="flex h-full min-h-[200px] items-center justify-center">
@@ -30,6 +32,7 @@ const PageLoader = () => (
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const isSetupComplete = localStorage.getItem(STORAGE_KEYS.setupComplete) === 'true';
 
   if (loading) {
     return (
@@ -38,7 +41,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  if (!user) return <Navigate to="/welcome" replace />;
+  if (!user) {
+    return <Navigate to={isSetupComplete ? '/login' : '/welcome'} replace />;
+  }
   if (!canAccessRoute(user.role, location.pathname)) {
     return <Navigate to="/" replace />;
   }
@@ -53,7 +58,7 @@ export const AppRouter = () => {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/welcome" element={
-            isSetupComplete ? <Navigate to="/" replace /> : <WelcomeScreen />
+            isSetupComplete ? <Navigate to="/login" replace /> : <WelcomeScreen />
           } />
 
           <Route element={<AuthLayout />}>
@@ -74,6 +79,9 @@ export const AppRouter = () => {
             <Route path="billing" element={<Billing />} />
             <Route path="reports" element={<Reports />} />
             <Route path="notifications" element={<Notifications />} />
+            <Route path="ai-intake" element={<AiIntake />} />
+            <Route path="ai-intake/:sessionId" element={<AiIntake />} />
+            <Route path="migration" element={<MigrationWizardPage />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
