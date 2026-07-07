@@ -301,7 +301,7 @@ Designed for scalability, maintainability, and future production deployment.
 ---
 
 ## Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.PNG)
 
 ---
 
@@ -321,7 +321,7 @@ Designed for scalability, maintainability, and future production deployment.
 ---
 
 ## Calendar
-![Calendar](screenshots/calendar.PNG)
+![Calendar](screenshots/calender.PNG)
 
 ---
 
