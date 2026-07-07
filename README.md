@@ -311,7 +311,7 @@ Designed for scalability, maintainability, and future production deployment.
 ---
 
 ## Leads
-![Leads](screenshots/leads.png)
+![Leads](screenshots/leads.PNG)
 
 ---
 
@@ -321,17 +321,17 @@ Designed for scalability, maintainability, and future production deployment.
 ---
 
 ## Calendar
-![Calendar](screenshots/calendar.png)
+![Calendar](screenshots/calendar.PNG)
 
 ---
 
 ## Tasks
-![Tasks](screenshots/tasks.png)
+![Tasks](screenshots/tasks.PNG)
 
 ---
 
 ## Documents
-![Documents](screenshots/documents.png)
+![Documents](screenshots/documents.PNG)
 
 ---
 
@@ -370,10 +370,6 @@ Designed for scalability, maintainability, and future production deployment.
 
 ---
 
-## Mobile Responsive
-![Mobile](screenshots/mobile.png)
-
----
 
 # 💼 Business Value
 
