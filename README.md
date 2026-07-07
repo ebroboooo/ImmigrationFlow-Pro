@@ -321,7 +321,7 @@ Designed for scalability, maintainability, and future production deployment.
 ---
 
 ## Calendar
-![Calendar](screenshots/calender.PNG)
+![Calendar](screenshots/calender.png)
 
 ---
 
